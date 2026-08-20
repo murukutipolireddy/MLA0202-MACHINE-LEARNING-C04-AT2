@@ -42,7 +42,6 @@ fraud_prob = result.values[1]
 genuine_prob = result.values[0]
 
 print("CREDIT CARD FRAUD DETECTION")
-print("---------------------------")
 print("Transaction Amount : High")
 print("Location           : Normal")
 print("Login Device       : Unknown")
