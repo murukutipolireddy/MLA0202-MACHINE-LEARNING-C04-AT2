@@ -1,0 +1,42 @@
+!pip install pgmpy -q
+
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.factors.discrete import TabularCPD
+from pgmpy.inference import VariableElimination
+
+model = DiscreteBayesianNetwork([
+    ('Amount','Fraud'),
+    ('Location','Fraud'),
+    ('Device','Fraud')
+])
+
+a = TabularCPD('Amount',2,[[0.7],[0.3]])
+l = TabularCPD('Location',2,[[0.8],[0.2]])
+d = TabularCPD('Device',2,[[0.75],[0.25]])
+
+f = TabularCPD(
+    'Fraud',2,
+    [[0.95,0.80,0.70,0.20,0.85,0.60,0.40,0.05],
+     [0.05,0.20,0.30,0.80,0.15,0.40,0.60,0.95]],
+    evidence=['Amount','Location','Device'],
+    evidence_card=[2,2,2]
+)
+
+model.add_cpds(a,l,d,f)
+
+infer = VariableElimination(model)
+
+result = infer.query(
+    ['Fraud'],
+    evidence={'Amount':1,'Location':1,'Device':1}
+)
+
+fraud_probability = result.values[1]
+
+print("Fraud Probability:", round(fraud_probability, 2))
+print("Legitimate Probability:", round(result.values[0], 2))
+
+if fraud_probability > 0.5:
+    print("Prediction: Fraudulent Transaction")
+else:
+    print("Prediction: Genuine Transaction")
