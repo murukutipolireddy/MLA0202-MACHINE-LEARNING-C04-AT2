@@ -1,0 +1,38 @@
+!pip install sklearn-crfsuite -q
+
+import sklearn_crfsuite
+
+X = [[
+    {'word':'Ravi'},
+    {'word':'Laptop'},
+    {'word':'ORD101'},
+    {'word':'Damaged'}
+]]
+
+y = [['NAME','PRODUCT','ORDER','ISSUE']]
+
+crf = sklearn_crfsuite.CRF(
+    algorithm='lbfgs',
+    max_iterations=50
+)
+
+crf.fit(X, y)
+
+test = [[
+    {'word':'Priya'},
+    {'word':'Mobile'},
+    {'word':'ORD202'},
+    {'word':'Delayed'}
+]]
+
+result = crf.predict(test)[0]
+
+print("Customer Support Email:")
+print("poli ordered Mobile ORD202 but it is Delayed")
+
+print("\nExtracted Entities:")
+
+for word, label in zip(
+    ['poli','Mobile','ORD202','Delayed'], result
+):
+    print(word, ":", label)
